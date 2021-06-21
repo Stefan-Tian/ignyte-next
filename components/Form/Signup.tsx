@@ -12,6 +12,8 @@ import {
 import { AuthCard } from 'styles/components/Card';
 import BasicTextFormFields from './BasicTextFormFields';
 import AuthGoogle from './AuthGoogle';
+import { useAppDispatch } from 'app/hooks';
+import { signup } from 'features/auth/authSlice';
 
 import type { SubmitHandler } from 'react-hook-form';
 import type { TextFieldProps } from 'components/Input/TextField';
@@ -28,8 +30,10 @@ const Signup = ({ setAuthType }: AuthFormProps) => {
     resolver: yupResolver(loginSchema),
   });
 
+  const dispatch = useAppDispatch();
+
   const onSubmit: SubmitHandler<FormValues> = (data) => {
-    console.log(data);
+    dispatch(signup(data));
   };
 
   const formFields: TextFieldProps[] = useMemo(() => {
@@ -50,7 +54,12 @@ const Signup = ({ setAuthType }: AuthFormProps) => {
   }, [control]);
 
   return (
-    <AuthCard width="5.2rem" onSubmit={handleSubmit(onSubmit)} noValidate>
+    <AuthCard
+      width="5.2rem"
+      onSubmit={handleSubmit(onSubmit)}
+      as="form"
+      noValidate
+    >
       <BasicTextFormFields
         title="Signup"
         fieldSets={formFields}

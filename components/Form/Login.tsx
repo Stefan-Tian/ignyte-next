@@ -7,6 +7,8 @@ import { AuthType, emailFields, passwordFields } from './constants/auth';
 import BasicTextFormFields from './BasicTextFormFields';
 import AuthGoogle from './AuthGoogle';
 import { AuthCard } from 'styles/components/Card';
+import { useAppDispatch } from 'app/hooks';
+import { login } from 'features/auth/authSlice';
 
 import type { SubmitHandler } from 'react-hook-form';
 import type { TextFieldProps } from 'components/Input/TextField';
@@ -22,8 +24,10 @@ const Login = ({ setAuthType }: AuthFormProps) => {
     resolver: yupResolver(loginSchema),
   });
 
+  const dispatch = useAppDispatch();
+
   const onSubmit: SubmitHandler<FormValues> = (data) => {
-    console.log(data);
+    dispatch(login(data));
   };
 
   const formFields: TextFieldProps[] = useMemo(() => {
@@ -42,7 +46,12 @@ const Login = ({ setAuthType }: AuthFormProps) => {
   }, [setAuthType, control]);
 
   return (
-    <AuthCard width="5.2rem" onSubmit={handleSubmit(onSubmit)} noValidate>
+    <AuthCard
+      width="5.2rem"
+      onSubmit={handleSubmit(onSubmit)}
+      as="form"
+      noValidate
+    >
       <BasicTextFormFields
         title="Login"
         fieldSets={formFields}

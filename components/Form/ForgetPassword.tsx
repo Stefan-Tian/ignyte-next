@@ -3,9 +3,11 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import loginSchema from './schemas/login';
 import { MdText } from 'styles/components/Text';
-import { AuthType, emailFields, passwordFields } from './constants/auth';
+import { AuthType, emailFields } from './constants/auth';
 import BasicTextFormFields from './BasicTextFormFields';
 import { AuthCard } from 'styles/components/Card';
+import { useAppDispatch } from 'app/hooks';
+import { forgetPassword } from 'features/auth/authSlice';
 
 import type { SubmitHandler } from 'react-hook-form';
 import type { TextFieldProps } from 'components/Input/TextField';
@@ -21,8 +23,10 @@ const ForgetPassword = ({ setAuthType }: AuthFormProps) => {
     resolver: yupResolver(loginSchema),
   });
 
+  const dispatch = useAppDispatch();
+
   const onSubmit: SubmitHandler<FormValues> = (data) => {
-    console.log(data);
+    dispatch(forgetPassword(data));
   };
 
   const formFields: TextFieldProps[] = useMemo(() => {
@@ -36,7 +40,12 @@ const ForgetPassword = ({ setAuthType }: AuthFormProps) => {
   }, [control]);
 
   return (
-    <AuthCard width="5.2rem" onSubmit={handleSubmit(onSubmit)} noValidate>
+    <AuthCard
+      width="5.2rem"
+      onSubmit={handleSubmit(onSubmit)}
+      as="form"
+      noValidate
+    >
       <BasicTextFormFields
         title="Forget Password"
         fieldSets={formFields}
