@@ -1,8 +1,12 @@
 import styled from 'styled-components';
-import { fade } from 'styles/keyframes';
+import { fadeIn } from 'styles/keyframes';
 
 interface CardProps {
   width?: string;
+}
+
+interface AuthProps extends CardProps {
+  position: 'right' | 'center';
 }
 
 const Card = styled.div<CardProps>`
@@ -17,11 +21,19 @@ const Card = styled.div<CardProps>`
   width: ${({ width }) => (width ? width : '100%')};
 `;
 
-const AuthCard = styled(Card)`
+const AuthCard = styled(Card)<AuthProps>`
   position: absolute;
-  right: 0rem;
   top: 2rem;
-  animation: ${fade} 0.6s ease-in;
+  animation: ${fadeIn} 0.6s ease-in;
+
+  ${({ position, width }) =>
+    position === 'center'
+      ? `
+    right: calc(50% - ${width} / 2);
+  `
+      : `
+    right: 0rem;
+  `};
 `;
 
 export { Card, AuthCard };

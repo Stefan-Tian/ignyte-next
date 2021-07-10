@@ -1,37 +1,37 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-
+import { updateErrors, updateSuccess } from './toast/toastSlice';
 import type { AxiosResponse } from 'axios';
 
 interface ErrorMessage {
-  error?: { message: string }[];
-}
-
-interface UnexpectedError {
-  error: { message: string }[];
+  errors?: { message: string }[];
 }
 
 type APICall<T, U extends ErrorMessage> = (
   data: T
 ) => Promise<AxiosResponse<U>>;
 
-export const createAsyncThunkHelper = <T, U extends ErrorMessage>(
+interface SuccessMessage {
+  message?: string;
+}
+
+type SuccessAndError = SuccessMessage & ErrorMessage;
+
+export const createAsyncThunkHelper = <T, U extends SuccessAndError>(
   prefix: string,
   handler: APICall<T, U>
 ) =>
-  createAsyncThunk<U, T, { rejectValue: UnexpectedError }>(
+  createAsyncThunk<U, T, { rejectValue: void }>(
     prefix,
     async (data: T, thunkAPI) => {
       try {
         const resp = await handler(data);
-        if (resp.data.error) {
-          return thunkAPI.rejectWithValue({ error: resp.data.error });
+        if (resp.data.message) {
+          thunkAPI.dispatch(updateSuccess([{ message: resp.data.message }]));
         }
-
         return resp.data;
       } catch (error) {
-        return thunkAPI.rejectWithValue({
-          error: [{ message: 'Oops, something went wrong' }],
-        });
+        thunkAPI.dispatch(updateErrors(error.response.data.errors));
+        return thunkAPI.rejectWithValue();
       }
     }
   );

@@ -18,6 +18,7 @@ export interface TextFieldProps extends MarginProps, UseControllerProps {
   type: string;
   helpClicker?: string;
   helpHandler?: () => void;
+  readOnly?: boolean;
 }
 
 const Help = styled.div`
@@ -39,6 +40,7 @@ const TextField = ({
   defaultValue,
   helpClicker,
   helpHandler,
+  readOnly = false,
   ...marginProps
 }: TextFieldProps) => {
   const {
@@ -58,6 +60,7 @@ const TextField = ({
         ref={ref}
         onFocus={(e) => (e.target.placeholder = $formatHint)}
         onBlur={(e) => (e.target.placeholder = CapitalizedName)}
+        readOnly={readOnly}
       />
       <InputLabel htmlFor={name}>{CapitalizedName}</InputLabel>
       {message && !error ? (

@@ -4,6 +4,8 @@ export enum AuthType {
   SIGN_UP = 'Signup',
   LOG_IN = 'Login',
   FORGET_PASSWORD = 'Forget password',
+  RESET_PASSWORD = 'Reset password',
+  RESEND_VERIFICATION_EMAIL = 'Resend verification email',
 }
 
 export const nicknameFields: TextFieldProps = {
@@ -28,7 +30,3 @@ export const passwordFields: TextFieldProps = {
   defaultValue: '',
   $marginBottom: 'm40',
 };
-
-export interface AuthFormProps {
-  setAuthType: React.Dispatch<React.SetStateAction<AuthType>>;
-}

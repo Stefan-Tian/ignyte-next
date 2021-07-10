@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import loginSchema from './schemas/login';
+import signupSchema from './schemas/signup';
 import { MdText } from 'styles/components/Text';
 import {
   AuthType,
@@ -12,12 +12,11 @@ import {
 import { AuthCard } from 'styles/components/Card';
 import BasicTextFormFields from './BasicTextFormFields';
 import AuthGoogle from './AuthGoogle';
-import { useAppDispatch } from 'app/hooks';
-import { signup } from 'features/auth/authSlice';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { signup, updateAuthType, selectAuth } from 'features/auth/authSlice';
 
 import type { SubmitHandler } from 'react-hook-form';
 import type { TextFieldProps } from 'components/Input/TextField';
-import type { AuthFormProps } from './constants/auth';
 
 interface FormValues {
   nickname: string;
@@ -25,15 +24,24 @@ interface FormValues {
   password: string;
 }
 
-const Signup = ({ setAuthType }: AuthFormProps) => {
+interface SignupProps {
+  setResendToEmail: (email: string) => void;
+}
+
+const Signup = ({ setResendToEmail }: SignupProps) => {
   const { handleSubmit, control } = useForm({
-    resolver: yupResolver(loginSchema),
+    resolver: yupResolver(signupSchema),
   });
 
   const dispatch = useAppDispatch();
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
-    dispatch(signup(data));
+  const setAuthType = (type: AuthType) => dispatch(updateAuthType(type));
+  const loading = useAppSelector(selectAuth('status')) === 'loading';
+
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+    await dispatch(signup(data));
+    setResendToEmail(data.email);
+    setAuthType(AuthType.RESEND_VERIFICATION_EMAIL);
   };
 
   const formFields: TextFieldProps[] = useMemo(() => {
@@ -54,27 +62,31 @@ const Signup = ({ setAuthType }: AuthFormProps) => {
   }, [control]);
 
   return (
-    <AuthCard
-      width="5.2rem"
-      onSubmit={handleSubmit(onSubmit)}
-      as="form"
-      noValidate
-    >
-      <BasicTextFormFields
-        title="Signup"
-        fieldSets={formFields}
-        buttonText="continue"
-      />
-      <AuthGoogle />
-      <MdText
-        $marginTop="m16"
-        color="blue2"
-        clickable={true}
-        onClick={() => setAuthType(AuthType.LOG_IN)}
+    <>
+      <AuthCard
+        width="5.2rem"
+        position="right"
+        onSubmit={handleSubmit(onSubmit)}
+        as="form"
+        noValidate
       >
-        Already have an account?
-      </MdText>
-    </AuthCard>
+        <BasicTextFormFields
+          title="Signup"
+          fieldSets={formFields}
+          buttonText="continue"
+          isLoading={loading}
+        />
+        <AuthGoogle />
+        <MdText
+          $marginTop="m16"
+          color="blue2"
+          clickable={true}
+          onClick={() => setAuthType(AuthType.LOG_IN)}
+        >
+          Already have an account?
+        </MdText>
+      </AuthCard>
+    </>
   );
 };
 

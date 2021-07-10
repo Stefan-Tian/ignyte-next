@@ -30,7 +30,6 @@ const GlobalStyle = createGlobalStyle`
 
   body {
     margin: 0;
-    min-height: 100vh;
     background-color: #1D2A38;
     font-family: 'Nunito Sans', Arial, Helvetica, sans-serif;
   }

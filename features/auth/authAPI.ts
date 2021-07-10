@@ -17,22 +17,39 @@ export interface SignupData extends LoginData {
   nickname: string;
 }
 
+export interface VerifyData {
+  token: string;
+}
+
+export type ResendEmailData = ForgetPasswordData;
 export interface AuthResponse {
   message?: string;
-  error?: {
+  errors?: {
     message: string;
   }[];
 }
 
 const userAPI = {
-  login: (data: LoginData) =>
-    api<LoginData, AuthResponse>('post', '/login', data),
-  signup: (data: SignupData) =>
-    api<SignupData, AuthResponse>('post', '/register', data),
-  forgetPassword: (data: ForgetPasswordData) =>
-    api<ForgetPasswordData, AuthResponse>('post', 'forget-password', data),
-  resetPassword: (data: ResetPasswordData) =>
-    api<ResetPasswordData, AuthResponse>('post', 'reset-password', data),
+  login: async (data: LoginData) =>
+    await api<LoginData, AuthResponse>('post', '/login', data),
+  signup: async (data: SignupData) =>
+    await api<SignupData, AuthResponse>('post', '/register', data),
+  forgetPassword: async (data: ForgetPasswordData) =>
+    await api<ForgetPasswordData, AuthResponse>(
+      'post',
+      '/forget-password',
+      data
+    ),
+  resetPassword: async (data: ResetPasswordData) =>
+    await api<ResetPasswordData, AuthResponse>('post', '/reset-password', data),
+  verifyAccount: async (data: VerifyData) =>
+    await api<VerifyData, AuthResponse>('get', 'verify', data),
+  resendVerificationEmail: async (data: ResendEmailData) =>
+    await api<ResendEmailData, AuthResponse>(
+      'post',
+      'resend-verification-email',
+      data
+    ),
 };
 
 export default userAPI;

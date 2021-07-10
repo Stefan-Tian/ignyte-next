@@ -8,7 +8,7 @@ interface ButtonProps extends MarginProps {
   variant?: 'primary' | 'secondary' | 'inverted';
 }
 
-const StButton = styled(Button)<ButtonProps>`
+const BaseButton = styled(Button)<ButtonProps>`
   border-radius: ${(props) => props.theme.borderRadius.xs};
   font-size: ${(props) => props.theme.fontSize.normalMD};
   color: ${(props) => props.theme.color.light};
@@ -23,9 +23,22 @@ const StButton = styled(Button)<ButtonProps>`
 
   ${marginHelper};
 
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
   :hover {
     filter: brightness(1.2);
   }
 `;
 
-export { StButton };
+interface FixedSizeButtonProps extends ButtonProps {
+  height: string;
+}
+
+const FixedSizeButton = styled(BaseButton)<FixedSizeButtonProps>`
+  width: ${(props) => (props.width ? props.width : '100%')};
+`;
+
+export { FixedSizeButton };

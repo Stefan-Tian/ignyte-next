@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import loginSchema from './schemas/login';
@@ -7,28 +7,34 @@ import { AuthType, emailFields, passwordFields } from './constants/auth';
 import BasicTextFormFields from './BasicTextFormFields';
 import AuthGoogle from './AuthGoogle';
 import { AuthCard } from 'styles/components/Card';
-import { useAppDispatch } from 'app/hooks';
-import { login } from 'features/auth/authSlice';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { login, updateAuthType, selectAuth } from 'features/auth/authSlice';
 
 import type { SubmitHandler } from 'react-hook-form';
 import type { TextFieldProps } from 'components/Input/TextField';
-import type { AuthFormProps } from './constants/auth';
 
 interface FormValues {
   email: string;
   password: string;
 }
 
-const Login = ({ setAuthType }: AuthFormProps) => {
+const Login = () => {
   const { handleSubmit, control } = useForm({
     resolver: yupResolver(loginSchema),
   });
 
   const dispatch = useAppDispatch();
 
+  const loading = useAppSelector(selectAuth('status')) === 'loading';
+
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     dispatch(login(data));
   };
+
+  const setAuthType = useCallback(
+    (type: AuthType) => dispatch(updateAuthType(type)),
+    [dispatch]
+  );
 
   const formFields: TextFieldProps[] = useMemo(() => {
     return [
@@ -47,6 +53,7 @@ const Login = ({ setAuthType }: AuthFormProps) => {
 
   return (
     <AuthCard
+      position="right"
       width="5.2rem"
       onSubmit={handleSubmit(onSubmit)}
       as="form"
@@ -56,6 +63,7 @@ const Login = ({ setAuthType }: AuthFormProps) => {
         title="Login"
         fieldSets={formFields}
         buttonText="continue"
+        isLoading={loading}
       />
       <AuthGoogle />
       <MdText

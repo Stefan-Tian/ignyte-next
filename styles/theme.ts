@@ -38,6 +38,7 @@ declare module 'styled-components' {
       gray4: string;
       light: string;
       error: string;
+      success: string;
     };
     shadow: {
       sm: string;
@@ -95,6 +96,7 @@ const theme: DefaultTheme = {
     gray4: '#6E7EA7',
     light: '#F3F3F9',
     error: '#FF647C',
+    success: '#00C48C',
   },
   shadow: {
     sm: '0px 0.04rem 0.64rem 0 rgba(0, 0, 0, 0.07)',

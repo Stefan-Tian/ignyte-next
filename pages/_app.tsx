@@ -1,18 +1,20 @@
 import type { AppProps } from 'next/app';
-import { Provider } from 'react-redux';
+import { Provider } from 'reakit';
 import { ThemeProvider } from 'styled-components';
 import GlobalStyles from 'styles/global';
 import theme from 'styles/theme';
-import store from 'app/store';
+import { wrapper } from 'app/store';
+import { ToastGroup } from 'components/Toast';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <ThemeProvider theme={theme}>
-      <Provider store={store}>
+    <Provider>
+      <ThemeProvider theme={theme}>
         <GlobalStyles />
         <Component {...pageProps} />
-      </Provider>
-    </ThemeProvider>
+        <ToastGroup />
+      </ThemeProvider>
+    </Provider>
   );
 }
-export default MyApp;
+export default wrapper.withRedux(MyApp);

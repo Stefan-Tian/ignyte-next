@@ -1,17 +1,12 @@
 import React, { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import forgetPasswordSchema from './schemas/forgetPasswordOrResendEmail';
-import { MdText } from 'styles/components/Text';
-import { AuthType, emailFields } from './constants/auth';
+import resendEmailSchema from './schemas/forgetPasswordOrResendEmail';
+import { emailFields } from './constants/auth';
 import BasicTextFormFields from './BasicTextFormFields';
 import { AuthCard } from 'styles/components/Card';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import {
-  forgetPassword,
-  updateAuthType,
-  selectAuth,
-} from 'features/auth/authSlice';
+import { resendVerificationEmail, selectAuth } from 'features/auth/authSlice';
 
 import type { SubmitHandler } from 'react-hook-form';
 import type { TextFieldProps } from 'components/Input/TextField';
@@ -20,28 +15,33 @@ interface FormValues {
   email: string;
 }
 
-const ForgetPassword = () => {
-  const { handleSubmit, control } = useForm({
-    resolver: yupResolver(forgetPasswordSchema),
-  });
+interface ResendProps {
+  resendToEmail: string;
+}
 
-  const loading = useAppSelector(selectAuth('status')) === 'loading';
+const ResendVerification = ({ resendToEmail }: ResendProps) => {
+  const { handleSubmit, control } = useForm({
+    resolver: yupResolver(resendEmailSchema),
+  });
 
   const dispatch = useAppDispatch();
 
+  const loading = useAppSelector(selectAuth('status')) === 'loading';
+
   const onSubmit: SubmitHandler<FormValues> = (data) => {
-    dispatch(forgetPassword(data));
+    dispatch(resendVerificationEmail(data));
   };
 
   const formFields: TextFieldProps[] = useMemo(() => {
     return [
       {
         ...emailFields,
-        message: 'We will send you a password reset link',
+        defaultValue: resendToEmail,
+        readOnly: true,
         control,
       },
     ];
-  }, [control]);
+  }, [control, resendToEmail]);
 
   return (
     <AuthCard
@@ -52,21 +52,13 @@ const ForgetPassword = () => {
       noValidate
     >
       <BasicTextFormFields
-        title="Forget Password"
+        title="Didn't get the email?"
         fieldSets={formFields}
-        buttonText="continue"
+        buttonText="resend verification email"
         isLoading={loading}
       />
-      <MdText
-        $marginTop="m16"
-        color="blue2"
-        clickable={true}
-        onClick={() => dispatch(updateAuthType(AuthType.SIGN_UP))}
-      >
-        Create a new account
-      </MdText>
     </AuthCard>
   );
 };
 
-export default ForgetPassword;
+export default ResendVerification;

@@ -1,17 +1,15 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
+import { useAppSelector } from 'app/hooks';
 import styled from 'styled-components';
 import { AuthType } from 'components/Form/constants/auth';
 import { Heading2 } from 'styles/components/Text';
+import { PageWrapper } from 'styles/components/Wrapper';
 import signinPerson from 'public/signin-person.png';
-import NamedLogo from 'components/NamedLogo';
+import NamedLogo from 'components/Brand/NamedLogo';
 import { Login, Signup, ForgetPassword } from 'components/Form';
-
-const Wrapper = styled.div`
-  width: 13rem;
-  position: relative;
-  margin: auto;
-`;
+import ResendVerification from 'components/Form/ResendVerification';
+import { selectAuth } from 'features/auth/authSlice';
 
 const Message = styled(Heading2)`
   position: absolute;
@@ -28,11 +26,12 @@ const PersonImageWrapper = styled.div`
   top: 3.8rem;
 `;
 
-const Auth: React.FC = () => {
-  const [authType, setAuthType] = useState<AuthType>(AuthType.SIGN_UP);
+const Auth = () => {
+  const [resendToEmail, setResendToEmail] = useState<string>('');
+  const authType = useAppSelector(selectAuth('authType')) as AuthType;
 
   return (
-    <Wrapper>
+    <PageWrapper>
       <NamedLogo />
       <PersonImageWrapper>
         <Image src={signinPerson} alt="person image" />
@@ -42,12 +41,15 @@ const Auth: React.FC = () => {
         <br /> keep track of your fitness plans and
         <br /> subscribe to like-minded people.
       </Message>
-      {authType === AuthType.LOG_IN && <Login setAuthType={setAuthType} />}
-      {authType === AuthType.SIGN_UP && <Signup setAuthType={setAuthType} />}
-      {authType === AuthType.FORGET_PASSWORD && (
-        <ForgetPassword setAuthType={setAuthType} />
+      {authType === AuthType.LOG_IN && <Login />}
+      {authType === AuthType.SIGN_UP && (
+        <Signup setResendToEmail={setResendToEmail} />
       )}
-    </Wrapper>
+      {authType === AuthType.FORGET_PASSWORD && <ForgetPassword />}
+      {authType === AuthType.RESEND_VERIFICATION_EMAIL && (
+        <ResendVerification resendToEmail={resendToEmail} />
+      )}
+    </PageWrapper>
   );
 };
 
